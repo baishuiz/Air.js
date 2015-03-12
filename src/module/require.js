@@ -1,24 +1,24 @@
 ;(function(Air) {
-    //var publicDispatchEvent = Air.base.Event.publicDispatchEvent;
 
+    var createEvent = Air.base.beacon.createEvent;
     //定义事件
     var requireEvent = {
-            COMPLETE : 'require_complete_' + ~~new Date()
-           , LOADED: 'require_loaded_' + ~~new Date()
-           , REQUIREING: 'require_requireing_' + ~~new Date()
+            COMPLETE   : createEvent('require_complete'),
+            LOADED     : createEvent('require_loaded'),
+            REQUIREING : createEvent('require_requireing')
         };
 
     //定义队列    
     var queue = {
-            requiring : {} //正在加载的模块
-           ,required : {}  //已加载完毕但未构造的模块
+            requiring    : {} //正在加载的模块
+           ,required     : {}  //已加载完毕但未构造的模块
            ,moduleLoaded : {} //加载并构造完毕的模块
            ,requireQueue : []  //模块加载意向清单
         };
 
 
     //监听模块加载状态，当模块通过 require 方法以外的其他形式加载时，应通过此事件通知require 记录
-    Air.base.beacon.on(queue, requireEvent.REQUIREING, function (e, data) {
+    Air.base.beacon(queue).on(requireEvent.REQUIREING, function (e, data) {
         var moduleName = data.moduleName.toLowerCase();
         queue.requireQueue[moduleName] || queue.requireQueue.push(moduleName);
         queue.required[moduleName] = true;
@@ -34,7 +34,6 @@
         }
 
         for (var i = 0,len = queue.requireQueue.length; i < len; i++) {
-            //if(!Air.base.NS('ModuleLoaded',Air.base)[queue.requireQueue[i]]){
             var module = queue.requireQueue[i];    
             if(!queue.moduleLoaded[module]){    
                 return false;

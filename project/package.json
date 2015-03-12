@@ -1,0 +1,24 @@
+{
+  "name": "Air",
+  "version": "0.1.0",
+  "description": "JavaScript module loader",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:baishuiz/Air.js.git"
+  },
+  "keywords": [
+    "javascript",
+    "module",
+    "loader"
+  ],
+  "author": "baishuiz@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baishuiz/Air.js/issues"
+  },
+  "homepage": "https://github.com/baishuiz/Air.js"
+}
