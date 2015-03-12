@@ -1,28 +1,32 @@
-;(function (Global) {
-    var air = function (obj) {
-        return new avatar(obj);
-    };
-
-    function avatar(obj) {
+;(function (global) {
+    
+    function Avatar(obj) {
         this.target = obj;
     }
 
-    var scripts = document.getElementsByTagName("script")
+    var air = function (obj) {
+        return new Avatar(obj);
+    };
+    
+    air.toString    = function () { return "baishuiz@gmail.com"};
+    var scripts     = document.getElementsByTagName("script")
     var selfElement = scripts[scripts.length-1];
-    var base = {
-        avatarCore: avatar.prototype
-           ,base: _air
-           , baseURL: selfElement.src.replace(/\/[^\/]+$/, '/')  || [$baseURL$]
-           , CDNTimestamp: selfElement.getAttribute('data-CDNTimestamp') || ''
-           ,isDebug:'[$isDebug?$]'
-           ,init: function () {
-               Global.Air = air.base.merge(air, _air);
-               base.isDebug || delete Global.Air.base;
+
+    var core = {
+            avatarCore   : Avatar.prototype,
+            plugins      : {},
+            attach       : function(key, fn){
+                               core.plugins[key] = fn;
+                           },
+            baseURL      : selfElement.src.replace(/\/[^\/]+$/, '/'),
+            CDNTimestamp : selfElement.getAttribute('data-CDNTimestamp') || '',
+            isDebug      : false,
+            init         : function () {
+               global.Air = core.plugins.merge(air, core.plugins);
+               core.isDebug || delete global.Air.base;
            }
     }
 
-    var _neg = {base:base};
-    air.base = base;
-    air.toString = function () { return "baishuiz@gmail.com"};
-    Global.Air = _air;
+    var _air   = {base:core};
+    global.Air = _air;
 })(this);

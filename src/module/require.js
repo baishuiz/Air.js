@@ -1,6 +1,6 @@
 ;(function(Air) {
-
-    var createEvent = Air.base.beacon.createEvent;
+    var beacon = Air.base.plugins.beacon;
+    var createEvent = beacon.createEvent;
     //定义事件
     var requireEvent = {
             COMPLETE   : createEvent('require_complete'),
@@ -18,7 +18,7 @@
 
 
     //监听模块加载状态，当模块通过 require 方法以外的其他形式加载时，应通过此事件通知require 记录
-    Air.base.beacon(queue).on(requireEvent.REQUIREING, function (e, data) {
+    beacon(queue).on(requireEvent.REQUIREING, function (e, data) {
         var moduleName = data.moduleName.toLowerCase();
         queue.requireQueue[moduleName] || queue.requireQueue.push(moduleName);
         queue.required[moduleName] = true;
@@ -44,10 +44,10 @@
 
      
     function publicDispatchCompleteEvent() { //此方法待重构
-        Air.base.beacon.on(requireEvent.COMPLETE);
-        Air.base.beacon(document).on('readystatechange'); //for 蓝线与红线之间的Air.domReady 
+        beacon.on(requireEvent.COMPLETE);
+        beacon(document).on('readystatechange'); //for 蓝线与红线之间的Air.domReady 
         publicDispatchCompleteEvent = function () {
-            Air.base.beacon.on(requireEvent.COMPLETE);
+            beacon.on(requireEvent.COMPLETE);
         }
     }
 
@@ -67,7 +67,7 @@
         // 跳过已加载的模块
         if(queue.required[module]  || queue.requiring[module] || queue.moduleLoaded[module]){
             //return true;
-            return Air.base.NS(module,Air.base);
+            return Air.base.plugins.NS(module,Air.base);
         }   
 
         //获取模块URL，实参优先级高于模块命名空间解析（此处URL需要区分大小写）
@@ -95,7 +95,7 @@
         function startLoad(module) {
             if(!isRequire(module)){
                 queue.requiring[module] = true;  //注册正在加载的模块
-                Air.base.BOM.loadJS(url, function () {
+                Air.base.plugins.loadJS(url, function () {
                     // queue.required[module] = true; //注册已加载完毕的模块
                     // 校验模块有效性
                     if (!queue.required[module]) {
@@ -112,19 +112,18 @@
         //判断模块是否已经加载过
         // return : ture 为已加载过， false 为尚未加载
         function isRequire(module){
-            //return queue.required[module] || queue.requiring[module] || Air.base.NS('ModuleLoaded',Air.base)[module];
             return queue.required[module] || queue.requiring[module] || queue.moduleLoaded[module];
         }
 
 
         
         startLoad(module); //尝试启动加载
-        return Air.base.NS(module,Air.base);
+        return Air.base.plugins.NS(module,Air.base);
     };
 
 
     //监听模块加载状态，当模块加载并构造完毕时出发回调
-    Air.base.beacon.on(require, requireEvent.LOADED, function (e, data) {
+    beacon.on(require, requireEvent.LOADED, function (e, data) {
         var moduleName = data.moduleName.toLowerCase();
         queue.required[moduleName] = true;
         queue.moduleLoaded[moduleName] = true;

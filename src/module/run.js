@@ -1,6 +1,6 @@
 ;(function (Air) {
     var runnerQueue = [];
-    var eventer = Air.base.Event;
+    var eventer = Air.base.plugins.beacon;
     var requireEvent = Air.base.Require.Event;
     function runnerAction() {
         while (function () {
@@ -9,7 +9,7 @@
             return runnerQueue.length;
         }()) { };
     };
-    eventer.addEventListener(this, requireEvent.COMPLETE, runnerAction);
+    eventer(this).on(requireEvent.COMPLETE, runnerAction);
 
     var _run = function () {
         var requireOfRun = [];
@@ -25,7 +25,7 @@
         }
 
         //监听模块加载状态，当模块加载并构造完毕时出发回调
-        this.runNow && eventer.addEventListener(this, requireEvent.LOADED, function (e, data) {
+        this.runNow && eventer(this).on(requireEvent.LOADED, function (e, data) {
             var moduleName = data.moduleName.toLowerCase();
             requireOfRun[moduleName] = true;
             Air.base.ArrayIndexOf(requireOfRun, moduleName)>=0 && isRequireComplete() && runBody && runBody();
@@ -52,11 +52,11 @@
                 var ns = module.match(/(^.*)\.(\w*)$/);
                 var nsPath = ns[1];
                 var moduleName = ns[2];
-                Air.base.NS(nsPath,Air.base)[moduleName];
+                Air.base.plugins.NS(nsPath,Air.base)[moduleName];
             }
 
             
-            var moduleBody = Air.base.NS(module,Air.base);
+            var moduleBody = Air.base.plugins.NS(module,Air.base);
             return  moduleBody;
         };
      
@@ -105,5 +105,5 @@
     * @param  {Fcuntion} fn [函数句柄]
     * @example 
     */
-    Air.base.run = run;
+    Air.base.attach("run", run);
 })(Air);

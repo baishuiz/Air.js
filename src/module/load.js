@@ -45,11 +45,12 @@
         var head = document.getElementsByTagName('head')[0]
            , jsLoader = document.createElement('script')
            , isComplate = false
+           , beacon = Air.base.plugins.beacon
            , isExisted
            , loadCompleteHandle = function () {
                isComplate = true;
-               Air.base.BOM.Event.removeEventListener(jsLoader, 'load', loadCompleteHandle);
-               Air.base.BOM.Event.removeEventListener(jsLoader, 'readystatechange', readyHandle);
+               Air.base(jsLoader).off('load', loadCompleteHandle);
+               Air.base(jsLoader).off('readystatechange', readyHandle);
                loadCompleteHandle = function () { };
                completeHandle && completeHandle();
            }
@@ -61,9 +62,9 @@
         jsLoader.async = true;
         jsLoader.setAttribute("type", "text/javascript");
         jsLoader.src = jsURL;
-        Air.base.BOM.Event.addEventListener(jsLoader, 'load', loadCompleteHandle);
-        Air.base.BOM.Event.addEventListener(jsLoader, 'readystatechange', readyHandle);
-        Air.base.BOM.Event.addEventListener(jsLoader, 'error', loadCompleteHandle);
+        beacon(jsLoader).on('load', loadCompleteHandle);
+        beacon(jsLoader).on('readystatechange', readyHandle);
+        beacon(jsLoader).on('error', loadCompleteHandle);
 
 
         //var jsList = [].slice.call(document.getElementsByTagName("script"));
@@ -90,5 +91,5 @@
     * @param {String} jsURL [js地址（暂时只支持绝对地址）]
     * @param {Function} completeHandle [回调函数]
     */
-    Air.base.BOM[moduleName] = loadJs;
+    Air.base.attach(moduleName, loadJs);
 })("loadJS", Air);

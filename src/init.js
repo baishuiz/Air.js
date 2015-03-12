@@ -1,19 +1,19 @@
 ;(function (Air) {
+    var base = Air.base.plugins;
     var openAPI = {
-          run: Air.base.run
-        , iRun: function (fn) { Air.base.run(fn,true) }
-        , loadJS: Air.base.BOM.loadJS
+          run: base.run
+        , iRun: function (fn) { base.run(fn,true) }
+        , loadJS: base.loadJS
         , Module:Air.base.Module
         , merge:Air.base.merge
-        , NS : Air.base.NS
+        , NS : base.NS
         , Enum : Air.base.Enum
-        , domReady: Air.base.BOM.DOMReady
+        , domReady: base.DOMReady
         , moduleURL: Air.base.setBaseURL
         , setCDNTimestamp: Air.base.setCDNTimestamp
     };
     //Air.base.merge(Air.base.avatarCore, avatarAPI);
-    Air.base.merge(Air, openAPI);
-    Air.base.beacon = beacon;
-    beacon.logoff();
+    base.merge(Air, openAPI);
+    //beacon.logoff();
     Air.base.init();
 })(Air);

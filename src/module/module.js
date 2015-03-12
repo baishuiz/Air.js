@@ -63,8 +63,8 @@
                 _module      = moduleName.toLowerCase(),
                 _nsPath      = nsPath.toLowerCase()
                 _base        = Air.base,
-                ns           = _base.NS,
-                activeModule = _base.NS(nsPath.toLowerCase(),_base)[_module],
+                ns           = _base.plugins.NS,
+                activeModule = _base.plugins.NS(nsPath.toLowerCase(),_base)[_module],
                 moduleAPI    = module(_base.Require,_base.run)
             ;
 
