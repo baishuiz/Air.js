@@ -12,8 +12,9 @@ module.exports = function(grunt){
             
            ,dist: {
                 src : [
-                        '../src/Air.js', 
+                        
                         '../src/libs/*.js',
+                        '../src/Air.js', 
                         '../src/utile/base.js',
                         '../src/module/*.js',
                         '../src/init.js'
@@ -59,4 +60,5 @@ module.exports = function(grunt){
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.registerTask('default', [ 'concat', 'uglify', 'jasmine']);
+    grunt.registerTask('package', [ 'concat', 'uglify']);
 };
