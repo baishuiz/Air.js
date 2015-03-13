@@ -1,11 +1,11 @@
-//var jsurl = "./src/toBeLoad.js";
-var jQueryUrl = "./src/jquery-1.7.2.min.js";
-var cssurl = "./src/toBeLoad.css";
+var jsurl = "../test/test.js";
 
 describe("Air.on", function () {
     
 });
 
+
+/*
 describe("Air.run", function () {
     beforeEach(function () {
 
@@ -27,17 +27,32 @@ describe("Air.run", function () {
         });
     });
 });
+*/
+
 
 describe("Air.loadJS", function () {
     beforeEach(function () {
 
     });
 
-    it("[Air.loadJS] 异步载入js并立即执行", function () {
-        Air.loadJS(jsurl);
+    it("[Air.loadJS] 异步载入js并立即执行", function (done) {
         var isLoad = 1;
-        expect(isLoad).toEqual(1);
+        console.log(1)
+        Air.loadJS(jsurl, function(){
+            isLoad = 2;
+            console.log(2)
+            
+            console.log(3)
+            expect(isLoad).toEqual(2);
+            done();
+        });
+        
+        //done();
+        console.log(4)
     });
+    
+    
+    
 
     it("[Air.loadJS] 如果同一个文件，多次执行loadJS，那么只会加载一次", function () {
         Air.loadJS(jsurl);
@@ -49,20 +64,16 @@ describe("Air.loadJS", function () {
         expect(isLoad).toEqual(1);
     });
 
-    it("[Air.loadJS] 加载完JS文件并执行之后，会调用回调函数", function () {
+    it("[Air.loadJS] 加载完JS文件并执行之后，会调用回调函数", function (done) {
         var msgaa = "loadBefore";
-        //expect(msg).toBe("loadBefore");
         Air.loadJS(jsurl, function () {
             msgaa = "loadComplete";
-            // console.log(1,msg)
-
+            done();
         });
         
-        waits(3000);
-        runs(function () {
-            expect(msgaa).toBe("loadComplete");
-            //console.log(2,msg)
-        });
+        
+        expect(msgaa).toBe("loadComplete");
+        
     });
 });
     

@@ -160,8 +160,8 @@
            , isExisted
            , loadCompleteHandle = function () {
                isComplate = true;
-               Air.base(jsLoader).off('load', loadCompleteHandle);
-               Air.base(jsLoader).off('readystatechange', readyHandle);
+               beacon(jsLoader).off('load');
+               beacon(jsLoader).off('readystatechange');
                loadCompleteHandle = function () { };
                completeHandle && completeHandle();
            }
