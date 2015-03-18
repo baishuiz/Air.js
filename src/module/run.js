@@ -9,7 +9,7 @@
             return runnerQueue.length;
         }()) { };
     };
-    eventer(this).on(requireEvent.COMPLETE, runnerAction);
+    eventer.on(requireEvent.COMPLETE, runnerAction);
 
     var _run = function () {
         var requireOfRun = [];
@@ -25,7 +25,7 @@
         }
 
         //监听模块加载状态，当模块加载并构造完毕时出发回调
-        this.runNow && eventer(this).on(requireEvent.LOADED, function (e, data) {
+        this.runNow && eventer.on(requireEvent.LOADED, function (e, data) {
             var moduleName = data.moduleName.toLowerCase();
             requireOfRun[moduleName] = true;
             Air.base.ArrayIndexOf(requireOfRun, moduleName)>=0 && isRequireComplete() && runBody && runBody();

@@ -123,7 +123,7 @@
 
 
     //监听模块加载状态，当模块加载并构造完毕时出发回调
-    beacon.on(require, requireEvent.LOADED, function (e, data) {
+    beacon.on(requireEvent.LOADED, function (e, data) {
         var moduleName = data.moduleName.toLowerCase();
         queue.required[moduleName] = true;
         queue.moduleLoaded[moduleName] = true;

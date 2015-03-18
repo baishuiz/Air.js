@@ -21,16 +21,16 @@
             baseURL      : selfElement.src.replace(/\/[^\/]+$/, '/'),
             CDNTimestamp : selfElement.getAttribute('data-CDNTimestamp') || '',
             isDebug      : false,
-            init         : function () {
-               global.Air = core.plugins.merge(air, core.plugins);
-               core.isDebug || delete global.Air.base;
+            init         : function (openAPI) {
+               global.Air = core.plugins.merge(air, openAPI);
+               //core.isDebug || delete global.Air.base;
            }
     }
 
     var _air   = {base:core};
     global.Air = _air;
 })(this);;;(function (Air) {
-    var base   = Air.base || {};
+
     var _base = {
         /**
         * @name NEG.base.NS
@@ -50,12 +50,16 @@
                 ns = ns[nsPath[i]];
             };
             return ns;
+        },
+
+        beacon : beacon,
+        merge  : beacon.utility.merge,
+
+        setBaseURL: function(url){
+            return Air.base.baseURL = url || Air.base.baseURL;
         }
     };
-    var attach = base.attach;
-    attach("beacon", beacon);
-    attach("merge" , beacon.utility.merge);
-    attach("NS" , _base.NS);
+    _base.merge(Air.base.plugins, _base);
 })(Air);;;(function (Air) {
     // 此方法待重构
     var isReady = false;
@@ -213,9 +217,9 @@
     var loaded = {}
     function _module(nsString,module) {
         "use strict"
-        var _base = Air.base;
+        var _base = Air.base.plugins;
         //发布消息：模块开始构造，但未构造完成
-        _base.beacon.on(_base.Require.Event.REQUIREING, { moduleName: nsString });
+        _base.beacon.on(Air.base.Require.Event.REQUIREING, { moduleName: nsString });
 
         //获得模块文件相对路径及文件名
         var ns = nsString.match(/(^.*)\.(\w*)$/);
@@ -256,7 +260,7 @@
                requireQueue.splice(requireQueue[moduleName], 1);
             }
             if(requireQueue.length<=0){
-              Air.base.beacon.off(nsString, Air.base.Require.Event.LOADED);
+              Air.base.plugins.beacon.off(nsString, Air.base.Require.Event.LOADED);
               action();
             }
         });
@@ -266,8 +270,9 @@
         function action(){
             var 
                 _module      = moduleName.toLowerCase(),
-                _nsPath      = nsPath.toLowerCase()
+                _nsPath      = nsPath.toLowerCase(),
                 _base        = Air.base,
+                beacon       = _base.plugins.beacon,
                 ns           = _base.plugins.NS,
                 activeModule = _base.plugins.NS(nsPath.toLowerCase(),_base)[_module],
                 moduleAPI    = module(_base.Require,_base.run)
@@ -278,7 +283,7 @@
                 if( typeof(moduleAPI) === 'function') {
                     ns(_nsPath,_base)[_module] = _base.merge(moduleAPI, activeModule);
                 } else {
-                    _base.merge(activeModule, moduleAPI);
+                    _base.plugins.merge(activeModule, moduleAPI);
                 }
             } else {
                 ns(_nsPath, _base)[_module] = moduleAPI;
@@ -286,8 +291,7 @@
 
             //登记已经构造好的模块，并广播通知
             loaded[nsString.toLowerCase()] = true;
-            _base.beacon.on(_base.Require.Event.LOADED,{moduleName:nsString});        
-           
+            beacon.on(Air.base.Require.Event.LOADED,{moduleName:nsString});        
         }           
 
     }
@@ -417,7 +421,7 @@
 
 
     //监听模块加载状态，当模块加载并构造完毕时出发回调
-    beacon.on(require, requireEvent.LOADED, function (e, data) {
+    beacon.on(requireEvent.LOADED, function (e, data) {
         var moduleName = data.moduleName.toLowerCase();
         queue.required[moduleName] = true;
         queue.moduleLoaded[moduleName] = true;
@@ -438,7 +442,7 @@
             return runnerQueue.length;
         }()) { };
     };
-    eventer(this).on(requireEvent.COMPLETE, runnerAction);
+    eventer.on(requireEvent.COMPLETE, runnerAction);
 
     var _run = function () {
         var requireOfRun = [];
@@ -454,7 +458,7 @@
         }
 
         //监听模块加载状态，当模块加载并构造完毕时出发回调
-        this.runNow && eventer(this).on(requireEvent.LOADED, function (e, data) {
+        this.runNow && eventer.on(requireEvent.LOADED, function (e, data) {
             var moduleName = data.moduleName.toLowerCase();
             requireOfRun[moduleName] = true;
             Air.base.ArrayIndexOf(requireOfRun, moduleName)>=0 && isRequireComplete() && runBody && runBody();
@@ -546,11 +550,11 @@
         , NS : base.NS
         , Enum : Air.base.Enum
         , domReady: base.DOMReady
-        , moduleURL: Air.base.setBaseURL
+        , moduleURL: base.setBaseURL
         , setCDNTimestamp: Air.base.setCDNTimestamp
     };
     //Air.base.merge(Air.base.avatarCore, avatarAPI);
-    base.merge(Air, openAPI);
+    //base.merge(base, openAPI);
     //beacon.logoff();
-    Air.base.init();
+    Air.base.init(openAPI);
 })(Air);

@@ -1,5 +1,5 @@
 ;(function (Air) {
-    var base   = Air.base || {};
+
     var _base = {
         /**
         * @name NEG.base.NS
@@ -19,10 +19,14 @@
                 ns = ns[nsPath[i]];
             };
             return ns;
+        },
+
+        beacon : beacon,
+        merge  : beacon.utility.merge,
+
+        setBaseURL: function(url){
+            return Air.base.baseURL = url || Air.base.baseURL;
         }
     };
-    var attach = base.attach;
-    attach("beacon", beacon);
-    attach("merge" , beacon.utility.merge);
-    attach("NS" , _base.NS);
+    _base.merge(Air.base.plugins, _base);
 })(Air);

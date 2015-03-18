@@ -8,9 +8,9 @@
     var loaded = {}
     function _module(nsString,module) {
         "use strict"
-        var _base = Air.base;
+        var _base = Air.base.plugins;
         //发布消息：模块开始构造，但未构造完成
-        _base.beacon.on(_base.Require.Event.REQUIREING, { moduleName: nsString });
+        _base.beacon.on(Air.base.Require.Event.REQUIREING, { moduleName: nsString });
 
         //获得模块文件相对路径及文件名
         var ns = nsString.match(/(^.*)\.(\w*)$/);
@@ -51,7 +51,7 @@
                requireQueue.splice(requireQueue[moduleName], 1);
             }
             if(requireQueue.length<=0){
-              Air.base.beacon.off(nsString, Air.base.Require.Event.LOADED);
+              Air.base.plugins.beacon.off(nsString, Air.base.Require.Event.LOADED);
               action();
             }
         });
@@ -61,8 +61,9 @@
         function action(){
             var 
                 _module      = moduleName.toLowerCase(),
-                _nsPath      = nsPath.toLowerCase()
+                _nsPath      = nsPath.toLowerCase(),
                 _base        = Air.base,
+                beacon       = _base.plugins.beacon,
                 ns           = _base.plugins.NS,
                 activeModule = _base.plugins.NS(nsPath.toLowerCase(),_base)[_module],
                 moduleAPI    = module(_base.Require,_base.run)
@@ -73,7 +74,7 @@
                 if( typeof(moduleAPI) === 'function') {
                     ns(_nsPath,_base)[_module] = _base.merge(moduleAPI, activeModule);
                 } else {
-                    _base.merge(activeModule, moduleAPI);
+                    _base.plugins.merge(activeModule, moduleAPI);
                 }
             } else {
                 ns(_nsPath, _base)[_module] = moduleAPI;
@@ -81,8 +82,7 @@
 
             //登记已经构造好的模块，并广播通知
             loaded[nsString.toLowerCase()] = true;
-            _base.beacon.on(_base.Require.Event.LOADED,{moduleName:nsString});        
-           
+            beacon.on(Air.base.Require.Event.LOADED,{moduleName:nsString});        
         }           
 
     }

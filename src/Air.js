@@ -21,9 +21,9 @@
             baseURL      : selfElement.src.replace(/\/[^\/]+$/, '/'),
             CDNTimestamp : selfElement.getAttribute('data-CDNTimestamp') || '',
             isDebug      : false,
-            init         : function () {
-               global.Air = core.plugins.merge(air, core.plugins);
-               core.isDebug || delete global.Air.base;
+            init         : function (openAPI) {
+               global.Air = core.plugins.merge(air, openAPI);
+               //core.isDebug || delete global.Air.base;
            }
     }
 

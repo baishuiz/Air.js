@@ -9,11 +9,11 @@
         , NS : base.NS
         , Enum : Air.base.Enum
         , domReady: base.DOMReady
-        , moduleURL: Air.base.setBaseURL
+        , moduleURL: base.setBaseURL
         , setCDNTimestamp: Air.base.setCDNTimestamp
     };
     //Air.base.merge(Air.base.avatarCore, avatarAPI);
-    base.merge(Air, openAPI);
+    //base.merge(base, openAPI);
     //beacon.logoff();
-    Air.base.init();
+    Air.base.init(openAPI);
 })(Air);
