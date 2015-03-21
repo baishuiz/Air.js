@@ -29,12 +29,13 @@ module.exports = function(grunt){
               coverage: '../dist/<%=output.fileName %>',
               options: {
                 specs: '../test/spec/*Spec.js',
-                keepRunner: false
-               /* template: require('grunt-template-jasmine-istanbul'),
+                keepRunner: false,
+                template: require('grunt-template-jasmine-istanbul'),
                 templateOptions: {
                     coverage: 'bin/coverage/coverage.json',
                     report: 'bin/coverage',
-                }*/
+                    files:'../dist/<%=output.fileName %>'
+                }
               }
             }
             
