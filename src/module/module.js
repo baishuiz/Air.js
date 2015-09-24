@@ -72,7 +72,7 @@
 
             if(activeModule) { //如果当前模块已作为父级节点存在
                 if( typeof(moduleAPI) === 'function') {
-                    ns(_nsPath,_base)[_module] = _base.merge(moduleAPI, activeModule);
+                    ns(_nsPath,_base)[_module] = _base.plugins.merge(moduleAPI, activeModule);
                 } else {
                     _base.plugins.merge(activeModule, moduleAPI);
                 }
