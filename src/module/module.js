@@ -44,7 +44,7 @@
         });
        
 
-        requireQueue.length && Air.base.beacon.on(nsString, Air.base.Require.Event.LOADED, function (e,data) {
+        requireQueue.length && Air.base.plugins.beacon.on(nsString, Air.base.Require.Event.LOADED, function (e,data) {
             var moduleName = data.moduleName.toLowerCase();
             if(requireQueue.hasOwnProperty(moduleName)) {
                delete requireQueue[moduleName];
