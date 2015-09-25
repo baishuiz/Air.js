@@ -17,7 +17,7 @@
         var nsPath = ns[1];
         var moduleName = ns[2];
 
-        
+
 
         //remove multi-line comment
         var fnBody = module.toString().replace(/(?!['"])\/\*[\w\W]*?\*\//igm, '');
@@ -42,16 +42,16 @@
             loaded[idependence] || (requireQueue[idependence] = requireQueue.push(idependence) - 1);
             Air.base.Require(dependence);
         });
-       
 
-        requireQueue.length && Air.base.plugins.beacon.on(nsString, Air.base.Require.Event.LOADED, function (e,data) {
+
+        requireQueue.length && beacon(nsString).on(Air.base.Require.Event.LOADED, function (e,data) {
             var moduleName = data.moduleName.toLowerCase();
             if(requireQueue.hasOwnProperty(moduleName)) {
                delete requireQueue[moduleName];
                requireQueue.splice(requireQueue[moduleName], 1);
             }
             if(requireQueue.length<=0){
-              Air.base.plugins.beacon.off(nsString, Air.base.Require.Event.LOADED);
+              beacon(nsString).off(Air.base.Require.Event.LOADED);
               action();
             }
         });
@@ -59,7 +59,7 @@
         requireQueue.length || action();
 
         function action(){
-            var 
+            var
                 _module      = moduleName.toLowerCase(),
                 _nsPath      = nsPath.toLowerCase(),
                 _base        = Air.base,
@@ -82,8 +82,8 @@
 
             //登记已经构造好的模块，并广播通知
             loaded[nsString.toLowerCase()] = true;
-            beacon.on(Air.base.Require.Event.LOADED,{moduleName:nsString});        
-        }           
+            beacon.on(Air.base.Require.Event.LOADED,{moduleName:nsString});
+        }
 
     }
     Air.base.Module = _module;

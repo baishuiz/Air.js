@@ -9,12 +9,12 @@ module.exports = function(grunt){
             options: {
                 separator: ';'
             }
-            
+
            ,dist: {
                 src : [
-                        
+
                         '../src/libs/*.js',
-                        '../src/Air.js', 
+                        '../src/Air.js',
                         '../src/utile/base.js',
                         '../src/module/*.js',
                         '../src/init.js'
@@ -22,14 +22,14 @@ module.exports = function(grunt){
                 dest: '../dist/<%= output.fileName %>'
             }
         }
-        
+
        ,jasmine: {
             pivotal: {
               src: '../dist/<%=output.fileName %>',
               coverage: '../dist/<%=output.fileName %>',
               options: {
                 specs: '../test/spec/*Spec.js',
-                keepRunner: false,
+                keepRunner: true,
                 template: require('grunt-template-jasmine-istanbul'),
                 templateOptions: {
                     coverage: 'bin/coverage/coverage.json',
@@ -38,14 +38,14 @@ module.exports = function(grunt){
                 }
               }
             }
-            
+
            ,mini: {
               src: '../dist/<%= output.minFileName %>',
               options: {
                 specs: '../test/spec/*Spec.js',
                 keepRunner:false
               }
-            }            
+            }
         }
        ,uglify: {
           mini: {
@@ -53,10 +53,10 @@ module.exports = function(grunt){
               '../dist/<%= output.minFileName %>': ['../dist/<%= output.fileName %>']
             }
           }
-        }    
-       
+        }
+
     });
-    
+
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-contrib-uglify');

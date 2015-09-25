@@ -16,6 +16,20 @@ describe("Air.run", function () {
                 done();
         });
     });
+
+
+    it("Air.Module 中存在依赖模块", function(done){
+        var msg = "loadBefore";
+        expect(msg).toBe("loadBefore");
+        Air.moduleURL("../")
+        Air.run(function (require) {
+            var a = require("test.testModule2");
+                msg = "loadComplete";
+                expect(msg).toBe("loadComplete");
+                expect(a.result).toBe("ok");
+                done();
+        });
+    })
 });
 
 
@@ -28,14 +42,14 @@ describe("Air.loadJS", function () {
             expect(msg).toEqual("loadComplete");
             expect(window.onlyOne).toEqual(1);
             done();
-        });        
+        });
     });
  });
 
 
 
-    
- 
+
+
 describe("Air.moduleURL", function () {
     it("获取NEG当前路径", function () {
         var oldURL = Air.moduleURL();
