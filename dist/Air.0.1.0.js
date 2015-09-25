@@ -1045,15 +1045,15 @@
             Air.base.Require(dependence);
         });
 
-
-        requireQueue.length && beacon(nsString).on(Air.base.Require.Event.LOADED, function (e,data) {
+        var target = new String(nsString);
+        requireQueue.length && beacon(target).on(Air.base.Require.Event.LOADED, function (e,data) {
             var moduleName = data.moduleName.toLowerCase();
             if(requireQueue.hasOwnProperty(moduleName)) {
                delete requireQueue[moduleName];
                requireQueue.splice(requireQueue[moduleName], 1);
             }
             if(requireQueue.length<=0){
-              beacon(nsString).off();
+              beacon(target).off(Air.base.Require.Event.LOADED);
               action();
             }
         });

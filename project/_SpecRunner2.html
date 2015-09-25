@@ -16,10 +16,7 @@
     Air.moduleURL("../");
     Air.run(function (require) {
         var a = require("test.testModule2");
-            msg = "loadComplete";
-            expect(msg).toBe("loadComplete");
-            expect(a.result).toBe("ok");
-            done();
+            console.log(a);
     });
 </script>
 </body>

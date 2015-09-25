@@ -9,16 +9,17 @@ describe("Air.run", function () {
         expect(msg).toBe("loadBefore");
         Air.moduleURL("../")
         Air.run(function (require) {
-            var a = require("test.testModule");
+            var a = require("test.testModule2");
                 msg = "loadComplete";
                 expect(msg).toBe("loadComplete");
                 expect(a.result).toBe("ok");
+                console.log("==============okok")
                 done();
         });
     });
 
 
-    it("Air.Module 中存在依赖模块", function(done){
+    it("Air.Module 中存在依赖模块", function (done) {
         var msg = "loadBefore";
         expect(msg).toBe("loadBefore");
         Air.moduleURL("../")
@@ -27,6 +28,7 @@ describe("Air.run", function () {
                 msg = "loadComplete";
                 expect(msg).toBe("loadComplete");
                 expect(a.result).toBe("ok");
+                console.log(a,123)
                 done();
         });
     })
