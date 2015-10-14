@@ -67,9 +67,10 @@
         "use strict"
         var me = run;
         if (!(this instanceof me)) {
-            return new me(fn, runNow);
+            return new me(fn, runNow, arguments);
         }
         
+        var params = [].slice.call(arguments[2]).slice(2);
         var context = this;
         context.runNow = runNow;
         _run.call(context);
@@ -94,7 +95,9 @@
 
         
         context.run(function(){
-            fn(context.require, context.run);
+            //fn(context.require, context.run);
+            var _params = [context.require].concat(params);
+            fn.apply(this, _params);
         });
         
     };

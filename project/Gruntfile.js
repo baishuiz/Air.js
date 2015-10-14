@@ -62,4 +62,5 @@ module.exports = function(grunt){
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.registerTask('default', [ 'concat', 'uglify', 'jasmine']);
     grunt.registerTask('package', [ 'concat', 'uglify']);
+    grunt.registerTask('debug', [ 'concat', 'jasmine:pivotal']);
 };
