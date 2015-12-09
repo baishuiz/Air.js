@@ -15,7 +15,7 @@
         NS: function (NSString, root) {
             var nsPath = NSString.split("."), ns = root || window || {}, root = ns;
             for (var i = 0, len = nsPath.length; i < len; i++) {
-                ns[nsPath[i]] = ns[nsPath[i]] || {};
+                ns[nsPath[i]] = ns[nsPath[i]] === undefined ? {} : ns[nsPath[i]];
                 ns = ns[nsPath[i]];
             };
             return ns;
