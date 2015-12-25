@@ -237,11 +237,11 @@
         });
 
 
-        var requireName = fnBody.replace(/^function\s*?\(\s*?([^,\)]+)[\w\W]*$/i, function(fnbody, reqName){
+        var requireName = fnBody.replace(/^function\s*?\(\s*?([^,\)]+)[\w\W]*$/, function(fnbody, reqName){
                               return reqName ;
                             }).replace(fnBody,'');
 
-        var reg = requireName && new RegExp("\\b" + requireName + "\\s*\\(([^\\)]+)\\)","igm");
+        var reg = requireName && new RegExp("\\b" + requireName + "\\s*\\(([^\\)]+)\\)","gm");
 
 
         var requireQueue = [];
@@ -467,7 +467,7 @@
 
         this.run = function (runner) {
             runBody = runner;
-            
+
 
             if (this.runNow) {
                 isRequireComplete() && runner();
@@ -489,11 +489,11 @@
                 Air.base.plugins.NS(nsPath,Air.base)[moduleName];
             }
 
-            
+
             var moduleBody = Air.base.plugins.NS(module,Air.base);
             return  moduleBody;
         };
-     
+
 
     }
 
@@ -503,7 +503,7 @@
         if (!(this instanceof me)) {
             return new me(fn, runNow, arguments);
         }
-        
+
         var params = [].slice.call(arguments[2]).slice(2);
         var context = this;
         context.runNow = runNow;
@@ -517,33 +517,34 @@
             return isString ? str : ''
         });
 
-        var requireName = fnBody.replace(/^function\s*?\(\s*?([^,\)]+)[\w\W]*$/i, function(fnbody, reqName){
+        var requireName = fnBody.replace(/^function\s*?\(\s*?([^,\)]+)[\w\W]*$/, function(fnbody, reqName){
                               return reqName ;
                             }).replace(fnBody,'');
-        var reg = requireName && new RegExp("\\b" + requireName + "\\s*\\(([^\\)]+)\\)","igm");
+        var reg = requireName && new RegExp("\\b" + requireName + "\\s*\\(([^\\)]+)\\)","gm");
         var requireQueue = [];
         reg && fnBody.replace(reg, function(requireString,nsPath){
             var moduleName = nsPath.replace(/['"]/g, '');
             context.require(moduleName);
         });
 
-        
+
         context.run(function(){
             //fn(context.require, context.run);
             var _params = [context.require].concat(params);
             fn.apply(this, _params);
         });
-        
+
     };
 
     /**
     * @name Air.base.run
     * @class [Air的沙箱环境]
     * @param  {Fcuntion} fn [函数句柄]
-    * @example 
+    * @example
     */
     Air.base.attach("run", run);
-})(Air);;;(function (Air) {
+})(Air);
+;;(function (Air) {
     var base = Air.base.plugins;
     var openAPI = {
           run: base.run
