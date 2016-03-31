@@ -28,7 +28,7 @@
         this.runNow && eventer.on(requireEvent.LOADED, function (e, data) {
             var moduleName = data.moduleName.toLowerCase();
             requireOfRun[moduleName] = true;
-            Air.base.ArrayIndexOf(requireOfRun, moduleName)>=0 && isRequireComplete() && runBody && runBody();
+            beacon.utility.arrayIndexOf(requireOfRun, moduleName)>=0 && isRequireComplete() && runBody && runBody();
         });
 
         this.run = function (runner) {
