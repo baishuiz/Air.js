@@ -79,7 +79,7 @@
         var fnBody = fn.toString().replace(/(?!['"])\/\*[\w\W]*?\*\//igm, '');
 
         //remove single line comment
-        fnBody = fnBody.replace(/(['"])[\w\W]*?\1|((['"])[\w\W]*?)\/\/[\w\W]*?\2|\/\/[\w\W]*?(\r|\n|$)/g, function (str, isString) {
+        fnBody = fnBody.replace(/(['"/])[\w\W]*?\1|((['"/])[\w\W]*?)\/\/[\w\W]*?\2|\/\/[\w\W]*?(\r|\n|$)/g, function (str, isString) {
             return isString ? str : ''
         });
 
