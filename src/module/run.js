@@ -89,8 +89,16 @@
         var reg = requireName && new RegExp("\\b" + requireName + "\\s*\\(([^\\)]+)\\)","gm");
         var requireQueue = [];
         reg && fnBody.replace(reg, function(requireString,nsPath){
-            var moduleName = nsPath.replace(/['"]/g, '');
-            context.require(moduleName);
+            var reg = /['" ]/g;
+            var args = nsPath.split(',');
+            var moduleName, url;
+            if (args.length > 1) {
+              moduleName = args[0].replace(reg, '');
+              url = args[1].replace(reg, '');
+            } else {
+              moduleName = nsPath.replace(reg, '');
+            }
+            context.require(moduleName, url);
         });
 
 

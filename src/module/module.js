@@ -37,10 +37,19 @@
 
         var requireQueue = [];
         reg && fnBody.replace(reg, function(requireString,nsPath){
-            var dependence = nsPath.replace(/['"]/g, '');
+            var reg = /['" ]/g;
+            var args = nsPath.split(',');
+            var dependence, url;
+            if (args.length > 1) {
+              dependence = args[0].replace(reg, '');
+              url = args[1].replace(reg, '');
+            } else {
+              dependence = nsPath.replace(reg, '');
+            }
+
             var idependence = dependence.toLowerCase();
             loaded[idependence] || (requireQueue[idependence] = requireQueue.push(idependence) - 1);
-            Air.base.Require(dependence);
+            Air.base.Require(dependence, url);
         });
 
         var target = new String(nsString);
