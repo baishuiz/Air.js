@@ -1,6 +1,6 @@
 {
   "name": "Air",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "JavaScript module loader",
   "main": "index.js",
   "scripts": {
