@@ -1,5 +1,5 @@
 ;(function (global) {
-    
+
     function Avatar(obj) {
         this.target = obj;
     }
@@ -7,7 +7,7 @@
     var air = function (obj) {
         return new Avatar(obj);
     };
-    
+
     air.toString    = function () { return "baishuiz@gmail.com"};
     var scripts     = document.getElementsByTagName("script")
     var selfElement = scripts[scripts.length-1];
@@ -19,6 +19,7 @@
                                core.plugins[key] = fn;
                            },
             baseURL      : selfElement.src.replace(/\/[^\/]+$/, '/'),
+            URLMap       : {},
             CDNTimestamp : selfElement.getAttribute('data-CDNTimestamp') || '',
             isDebug      : false,
             init         : function (openAPI) {

@@ -59,4 +59,19 @@ describe("Air.moduleURL", function () {
         expect(Air.moduleURL(oldURL)).toEqual(oldURL);
         expect(Air.moduleURL()).toEqual(oldURL);
     });
+
+    it("设置URLMap 及 远程加载", function (done) {
+        Air.moduleURL({
+            base: "../",
+            subPath: location.href.replace(/\/_.+\.html.*$/, '/') + "../test/subFolder/"
+        });
+        Air.run(function (require) {
+            var a = require("test.testModule");
+            var b = require("test.testModule4", "{{subPath}}testModule4.js");
+
+            expect(a.result).toBe("okok");
+            expect(b.result).toBe("ok4");
+            done();
+        });
+    });
 });

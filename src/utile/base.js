@@ -24,8 +24,16 @@
         beacon : beacon,
         merge  : beacon.utility.merge,
 
+        /**
+        * @param {String|Object} url baseURL
+        */
         setBaseURL: function(url){
-            return Air.base.baseURL = url || Air.base.baseURL;
+            if (beacon.isType(url, 'Object')) {
+                Air.base.URLMap = url;
+                return Air.base.baseURL = url['base'] || Air.base.baseURL;
+            } else {
+                return Air.base.baseURL = url || Air.base.baseURL;
+            }
         }
     };
     _base.merge(Air.base.plugins, _base);

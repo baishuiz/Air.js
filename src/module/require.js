@@ -8,7 +8,7 @@
             REQUIREING : createEvent('require_requireing')
         };
 
-    //定义队列    
+    //定义队列
     var queue = {
             requiring    : {} //正在加载的模块
            ,required     : {}  //已加载完毕但未构造的模块
@@ -34,18 +34,18 @@
         }
 
         for (var i = 0,len = queue.requireQueue.length; i < len; i++) {
-            var module = queue.requireQueue[i];    
-            if(!queue.moduleLoaded[module]){    
+            var module = queue.requireQueue[i];
+            if(!queue.moduleLoaded[module]){
                 return false;
             }
         };
         return true;
     }
 
-     
+
     function publicDispatchCompleteEvent() { //此方法待重构
         beacon.on(requireEvent.COMPLETE);
-        beacon(document).on('readystatechange'); //for 蓝线与红线之间的Air.domReady 
+        beacon(document).on('readystatechange'); //for 蓝线与红线之间的Air.domReady
         publicDispatchCompleteEvent = function () {
             beacon.on(requireEvent.COMPLETE);
         }
@@ -68,12 +68,20 @@
         if(queue.required[module]  || queue.requiring[module] || queue.moduleLoaded[module]){
             //return true;
             return Air.base.plugins.NS(module,Air.base);
-        }   
+        }
+
+        // 替换URL中的 {{*}} 内的内容为URLMap中的值
+        if (url) {
+            var URLMap = Air.base.URLMap || {};
+            url = url.replace(/{{(.+)}}/g, function(str, key){
+                return URLMap[key] || Air.base.baseURL;
+            })
+        }
 
         //获取模块URL，实参优先级高于模块命名空间解析（此处URL需要区分大小写）
         url = url || parseModule(_module);
 
-        
+
         module = module.toLowerCase();
 
         //记录模块加载意向
@@ -101,10 +109,10 @@
                     if (!queue.required[module]) {
                         throw new Error("module [" + module + "] is undefined! @" + url);
                     }
-                    
+
                     isRequireComplete() && publicDispatchCompleteEvent(); //如果所有预期加载的模块都已构造完毕，则广播COMPLETE事件
                 });
-            }      
+            }
         }
 
 
@@ -116,7 +124,7 @@
         }
 
 
-        
+
         startLoad(module); //尝试启动加载
         return Air.base.plugins.NS(module,Air.base);
     };
