@@ -1,10 +1,12 @@
 {
-  "name": "Air",
+  "name": "air",
   "version": "0.1.11",
-  "description": "JavaScript module loader",
-  "main": "index.js",
+  "description": "JavaScript module loader - A lightweight module system for modular JavaScript development",
+  "main": "dist/Air.0.1.11.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "grunt default",
+    "build": "grunt package",
+    "debug": "grunt debug"
   },
   "repository": {
     "type": "git",
@@ -13,7 +15,9 @@
   "keywords": [
     "javascript",
     "module",
-    "loader"
+    "loader",
+    "module-system",
+    "dependency-management"
   ],
   "author": "baishuiz@gmail.com",
   "license": "ISC",
@@ -22,10 +26,11 @@
   },
   "homepage": "https://github.com/baishuiz/Air.js",
   "devDependencies": {
-    "grunt": "~0.4.5",
-    "grunt-contrib-concat": "~0.5.1",
-    "grunt-contrib-jasmine": "~0.8.2",
-    "grunt-contrib-uglify": "~0.8.0",
-    "grunt-template-jasmine-istanbul": "~0.3.3"
+    "grunt": "^1.3.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-jasmine": "^1.1.0",
+    "grunt-contrib-uglify": "^5.0.0",
+    "grunt-template-jasmine-istanbul": "^0.4.0",
+    "istanbul": "^0.4.5"
   }
 }

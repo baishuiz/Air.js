@@ -1,6 +1,24 @@
 ;(function (Air) {
+
+    /**
+     * 运行队列，存储待执行的回调函数
+     * @type {Array}
+     * @private
+     */
     var runnerQueue = [];
+    
+    /**
+     * Beacon 事件系统的引用
+     * @type {Object}
+     * @private
+     */
     var eventer = Air.base.plugins.beacon;
+    
+    /**
+     * Require 事件对象引用
+     * @type {Object}
+     * @private
+     */
     var requireEvent = Air.base.Require.Event;
     function runnerAction() {
         while (function () {
