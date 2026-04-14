@@ -1,0 +1,360 @@
+;(function(Air) {
+    var beacon = Air.base.plugins.beacon;
+    var createEvent = beacon.createEvent;
+    //定义事件
+    var requireEvent = {
+            COMPLETE   : createEvent('require_complete'),
+            LOADED     : createEvent('require_loaded'),
+            REQUIREING : createEvent('require_requireing')
+        };
+
+    //定义队列
+    var queue = {
+            requiring    : {} //正在加载的模块
+           ,required     : {}  //已加载完毕但未构造的模块
+           ,moduleLoaded : {} //加载并构造完毕的模块
+           ,requireQueue : []  //模块加载意向清单
+        };
+
+
+    //监听模块加载状态，当模块通过 require 方法以外的其他形式加载时，应通过此事件通知require 记录
+    beacon(queue).on(requireEvent.REQUIREING, function (e, data) {
+        var moduleName = data.moduleName.toLowerCase();
+        queue.requireQueue[moduleName] || queue.requireQueue.push(moduleName);
+        queue.required[moduleName] = true;
+    });
+
+
+
+    //判断预期加载的模块是否已全部构造完毕
+    function isRequireComplete(moduleName) {
+        var result;
+        if (moduleName) {
+            return queue.moduleLoaded[moduleName]
+        }
+
+        for (var i = 0,len = queue.requireQueue.length; i < len; i++) {
+            var module = queue.requireQueue[i];
+            if(!queue.moduleLoaded[module]){
+                return false;
+            }
+        };
+        return true;
+    }
+
+
+    function publicDispatchCompleteEvent() { //此方法待重构
+        beacon.on(requireEvent.COMPLETE);
+        beacon(document).on('readystatechange'); //for 蓝线与红线之间的Air.domReady
+        publicDispatchCompleteEvent = function () {
+            beacon.on(requireEvent.COMPLETE);
+        }
+    }
+
+/**
+ * @fileoverview Air.js 模块加载器 - 实现模块动态加载和依赖管理
+ */
+
+;(function(Air) {
+    /**
+     * Beacon 事件系统的引用
+     * @type {Object}
+     * @private
+     */
+    var beacon = Air.base.plugins.beacon;
+    
+    /**
+     * 创建自定义事件的函数
+     * @type {Function}
+     * @private
+     */
+    var createEvent = beacon.createEvent;
+    
+    /**
+     * 定义 require 系统使用的各种事件类型
+     * @type {Object}
+     * @constant
+     * @property {Event} COMPLETE - 所有预期模듙都加载完成并构造完毕
+     * @property {Event} LOADED - 单个模개 加载完成并开始构造
+     * @property {Event} REQUIREING - 模듙开始加载（加载中）
+     * @private
+     */
+    var requireEvent = {
+            COMPLETE   : createEvent('require_complete'),
+            LOADED     : createEvent('require_loaded'),
+            REQUIREING : createEvent('require_requireing')
+        };
+
+    /**
+     * 模듙加载状态队列
+     * 
+     * @type {Object}
+     * @property {Object} requiring - 记录正在加载的模듙
+     * @property {Object} required - 记录已加载完毕（脚本加载完成）但未构造的模듙  
+     * @property {Object} moduleLoaded - 记录加载并构造완毕的模듙
+     * @property {Array} requireQueue - 모듙加载意向清单，用于追踪预期要加载的모듙
+     * @private
+     */
+    var queue = {
+            requiring    : {},
+           required     : {},
+           moduleLoaded : {},
+           requireQueue : []
+        };
+
+    /**
+     * 监听模듙 REQUIREING 事件，记录模듙加载意向
+     * 当模듙通过 require 方法以外的其他形式加载时，应通过此事件通知 require 系统
+     * @private
+     */
+    beacon(queue).on(requireEvent.REQUIREING, function (e, data) {
+        var moduleName = data.moduleName.toLowerCase();
+        queue.requireQueue[moduleName] || queue.requireQueue.push(moduleName);
+        queue.required[moduleName] = true;
+    });
+
+    /**
+     * 判断与期加载的所有模듙是否已全部构造完毕
+     * 
+     * @function isRequireComplete
+     * @param {String} [moduleName] - 可选，检查特定模듙是否已构造完毕
+     * @returns {Boolean} true 表示所有模듙已구造完毕，false 表示仍有模듙未完成  
+     * @private
+     */
+    function isRequireComplete(moduleName) {
+        var result;
+        if (moduleName) {
+            return queue.moduleLoaded[moduleName]
+        }
+
+        for (var i = 0, len = queue.requireQueue.length; i < len; i++) {
+            var module = queue.requireQueue[i];
+            if(!queue.moduleLoaded[module]){
+                return false;
+            }
+        };
+        return true;
+    }
+
+    /**
+     * 广播模듙加载完全完成事件
+     * 当所有预期模듙都已加载并구造完毕时，触发 COMPLETE 사건
+     * 
+     * @function publicDispatchCompleteEvent
+     * @private
+     */
+    function publicDispatchCompleteEvent() {
+        beacon.on(requireEvent.COMPLETE);
+        beacon(document).on('readystatechange');
+        publicDispatchCompleteEvent = function () {
+            beacon.on(requireEvent.COMPLETE);
+        }
+    }
+
+    /**
+     * 加载指定模듙的依赖项
+     * 
+     * 处理模듙的异步加载、缓存检查、URL 解析和加载完成。
+     * 如果模듙已加载，则直接返回其命名空间对象。
+     * 
+     * @function require
+     * @param {String} module - 모듙的命名空间（例如 'app.utils.math'）
+     * @param {String} [url] - 可选，모듙的完整 URL。如省略，则根据命名空间조动生成
+     * @returns {Object} 모듙的命名空间对象（可能为空抑或未完全构造）
+     * 
+     * @example
+     * // 在모 듙공厂函数中加载依赖
+     * Air.Module('app.main', function(require, NS) {
+     *     var utils = require('app.utils');
+     *     var config = require('app.config', 'custom/path/config.js');
+     *     return { };
+     * });
+     * 
+     * @description
+     * 模듙加载流程：
+     * 1. 검查模듙是否已加载（required / requiring / moduleLoaded）
+     * 2. 검查 URLMap 并替换 URL 占位符
+     * 3. 解析模듙的 URL（若未提供）
+     * 4. 도입 loadJS 异步加载 JavaScript 文件
+     * 5. 검查加载的파일是否定义了预期的модyло
+     * 6. 当所有模듙加载완료时，广播 COMPLETE 事件
+     * @private
+     */
+    var require = function(module, url){
+        //缓存原始命名空间名
+        var _module = module;
+
+        //转换为小写以実施 case-insensitive 比较
+        module = module.toLowerCase();
+
+        // 跳过已加载的模듙 
+        if(queue.required[module] || queue.requiring[module] || queue.moduleLoaded[module]){
+            return Air.base.plugins.NS(module, Air.base);
+        }
+
+        // 替换 URL中的 {{*}} 占位符为 URLMap 中的值
+        if (url) {
+            var URLMap = Air.base.URLMap || {};
+            url = url.replace(/{{(.+)}}/g, function(str, key){
+                return URLMap[key] || Air.base.baseURL;
+            })
+        }
+
+        /**
+         * 根据模듙命명space자동生成模듙 URL
+         * 例如：'app.ui.dialog' -> '/baseURL/app/ui/dialog.js'
+         * @private
+         */
+        function parseModule(module) {
+            var ns = module.match(/(^.*)(\.\w*)$/);
+            var nsPath = ns[1];
+            var moduleName = ns[2];
+            var CDNTimestamp = Air.base.CDNTimestamp || '';
+            CDNTimestamp = CDNTimestamp && '?' + CDNTimestamp;
+            return Air.base.baseURL + module.replace(/\./ig, '/') + '.js' + CDNTimestamp;
+        }
+
+        //获取模듙 URL，실参优先级高于자동解析
+        url = url || parseModule(_module);
+
+        module = module.toLowerCase();
+
+        //记录模듙加载意向
+        queue.requireQueue[module] = true;
+        queue.requireQueue.push(module);
+
+        /**
+         * 启动模듙加载流程
+         * @private
+         */
+        function startLoad(module) {
+            if(!isRequire(module)){
+                queue.requiring[module] = true;  //注册正在加载的模듙
+                Air.base.plugins.loadJS(url, function () {
+                    // 검사模듙有效性 - 模듙加载后필须정마讙定义
+                    if (!queue.required[module]) {
+                        throw new Error("Module [" + module + "] is undefined! @" + url);
+                    }
+
+                    // 若所有 прилож모듙都已完成，广播 COMPLETE 事件
+                    isRequireComplete() && publicDispatchCompleteEvent();
+                });
+            }
+        }
+
+        /**
+         * 判断模듙是否已经加载过
+         * @returns {Boolean} true 为已加载过，false 为尚未加载
+         * @private
+         */
+        function isRequire(module){
+            return queue.required[module] || queue.requiring[module] || queue.moduleLoaded[module];
+        }
+
+        startLoad(module);
+        return Air.base.plugins.NS(module, Air.base);
+    };
+
+    /**
+     * 监听모듙 LOADED 事件
+     * 当单个模듙加載並구조체면完毕时，更ष문模듙状态并检查是否所有모듙都完成
+     * @private
+     */
+    beacon.on(requireEvent.LOADED, function (e, data) {
+        var moduleName = data.moduleName.toLowerCase();
+        queue.required[moduleName] = true;
+        queue.moduleLoaded[moduleName] = true;
+        isRequireComplete() && publicDispatchCompleteEvent();
+    });
+
+    /**
+     * 暴露事件对象和工具ࠖ数供外部使用
+     */
+    require.Event = requireEvent;
+    require.isRequireComplete = isRequireComplete;
+    
+    /**
+     * 将 require 함ქsrv数公开为 Air.base.Require
+     * @type {Function}
+     */
+    Air.base.Require = require;
+})(Air);
+
+        // 跳过已加载的模块
+        if(queue.required[module]  || queue.requiring[module] || queue.moduleLoaded[module]){
+            //return true;
+            return Air.base.plugins.NS(module,Air.base);
+        }
+
+        // 替换URL中的 {{*}} 内的内容为URLMap中的值
+        if (url) {
+            var URLMap = Air.base.URLMap || {};
+            url = url.replace(/{{(.+)}}/g, function(str, key){
+                return URLMap[key] || Air.base.baseURL;
+            })
+        }
+
+        //获取模块URL，实参优先级高于模块命名空间解析（此处URL需要区分大小写）
+        url = url || parseModule(_module);
+
+
+        module = module.toLowerCase();
+
+        //记录模块加载意向
+        queue.requireQueue[module] = true;
+        queue.requireQueue.push(module);
+
+        // parse module
+        function parseModule(module){
+            var ns = module.match(/(^.*)(\.\w*)$/);
+            var nsPath = ns[1];
+            var moduleName = ns[2];
+            var CDNTimestamp = Air.base.CDNTimestamp || '';
+            CDNTimestamp = CDNTimestamp && '?' + CDNTimestamp;
+            return Air.base.baseURL + module.replace(/\./ig,'/') + '.js' + CDNTimestamp;
+        }
+
+
+        //压入require队列，开始加载URL
+        function startLoad(module) {
+            if(!isRequire(module)){
+                queue.requiring[module] = true;  //注册正在加载的模块
+                Air.base.plugins.loadJS(url, function () {
+                    // queue.required[module] = true; //注册已加载完毕的模块
+                    // 校验模块有效性
+                    if (!queue.required[module]) {
+                        throw new Error("module [" + module + "] is undefined! @" + url);
+                    }
+
+                    isRequireComplete() && publicDispatchCompleteEvent(); //如果所有预期加载的模块都已构造完毕，则广播COMPLETE事件
+                });
+            }
+        }
+
+
+
+        //判断模块是否已经加载过
+        // return : ture 为已加载过， false 为尚未加载
+        function isRequire(module){
+            return queue.required[module] || queue.requiring[module] || queue.moduleLoaded[module];
+        }
+
+
+
+        startLoad(module); //尝试启动加载
+        return Air.base.plugins.NS(module,Air.base);
+    };
+
+
+    //监听模块加载状态，当模块加载并构造完毕时出发回调
+    beacon.on(requireEvent.LOADED, function (e, data) {
+        var moduleName = data.moduleName.toLowerCase();
+        queue.required[moduleName] = true;
+        queue.moduleLoaded[moduleName] = true;
+        isRequireComplete() && publicDispatchCompleteEvent();
+    });
+
+    require.Event = requireEvent;
+    require.isRequireComplete = isRequireComplete;
+    Air.base.Require = require;
+})(Air);

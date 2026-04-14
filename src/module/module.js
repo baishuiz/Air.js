@@ -1,12 +1,35 @@
 ;(function(Air) {
     /**
-    * @name Air.Module
-    * @class [Air 模块构造器]
-    * @param {String} nsString [模块命名空间]
-    * @param {Function} module [模块逻辑代码]
-    */
+     * 已加载的模块记录表，用于跟踪已完成构造的模块
+     * @type {Object}
+     * @private
+     */
     var loaded = {}
-    function _module(nsString,module) {
+    
+    /**
+     * 模块构造函数
+     * 
+     * 解析模块工厂函数中的依赖项，加载所有依赖模块，
+     * 然后执行模块工厂函数以生成模块导出对象。
+     * 
+     * @function _module
+     * @param {String} nsString - 模块的命名空间（例如 'app.ui.dialog'）
+     * @param {Function} factory - 模块的工厂函数
+     *                             签名：function(require, NS) { return {...}; }
+     * 
+     * @example
+     * // 简单模块
+     * Air.Module('app.utils', function(require, NS) {
+     *     return { add: function(a, b) { return a + b; } };
+     * });
+     * 
+     * // 带依赖的模块
+     * Air.Module('app.math', function(require, NS) {
+     *     var utils = require('app.utils');
+     *     return { compute: function(a, b) { return utils.add(a, b); } };
+     * });
+     */
+    function _module(nsString, module) {
         "use strict"
         var _base = Air.base.plugins;
         //发布消息：模块开始构造，但未构造完成
